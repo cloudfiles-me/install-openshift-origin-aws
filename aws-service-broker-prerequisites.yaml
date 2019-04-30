@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  Creates the prerequisites for the AWS Service Broker -
+  https://github.com/awslabs/aws-servicebroker/blob/master/docs/install_prereqs.md
+Resources:
+  BrokerTable:
+    Type: "AWS::DynamoDB::Table"
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: id
+        AttributeType: S
+      - AttributeName: userid
+        AttributeType: S
+      - AttributeName: type
+        AttributeType: S
+      KeySchema:
+      - AttributeName: id
+        KeyType: HASH
+      - AttributeName: userid
+        KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      TableName: "awssb"
+      GlobalSecondaryIndexes:
+      - IndexName: "type-userid-index"
+        KeySchema:
+        - AttributeName: type
+          KeyType: HASH
+        - AttributeName: userid
+          KeyType: RANGE
+        Projection:
+          ProjectionType: INCLUDE
+          NonKeyAttributes: [ id, userid, type, locked ]
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
